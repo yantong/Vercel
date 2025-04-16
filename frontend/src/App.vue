@@ -1,5 +1,5 @@
 <template>
-  <div>Hello world</div>
+  <div></div>
 </template>
 
 <script>
@@ -7,8 +7,15 @@ export default {
   name: "App",
   components: {},
   mounted() {
-    fetch('/api/qiuye')
-  }
+    let body = new FormData();
+
+    body.append("config_key", "stsq_web_image_feature_config");
+
+    fetch("/wallpaper/v1/config/queryConfig", {
+      method: "POST",
+      body,
+    });
+  },
 };
 </script>
 

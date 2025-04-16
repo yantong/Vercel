@@ -5,7 +5,7 @@ module.exports = defineConfig({
   lintOnSave: false,
   devServer: {
     proxy: {
-      "/api": {
+      "/wallpaper": {
         target: "http://localhost:3000/",
         changeOrigin: true,
       },
