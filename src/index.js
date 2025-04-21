@@ -24,8 +24,7 @@ function reqRedirect(url) {
             data.append(key, req.body[key])
         }
 
-        let result = await axios.post(url, data)
-
+        let result = await axios.post(url, data, {})
 
         res.send(result.data.data)
     });
