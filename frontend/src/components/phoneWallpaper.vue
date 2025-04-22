@@ -4,7 +4,8 @@
       <img
         v-for="item in listData"
         :key="item.thumbUrl"
-        :src="item.largeUrl"
+        :src="item.thumbUrl"
+        @click="openImg(item)"
         alt=""
         :style="{ 'aspect-ratio': item.width / item.height, height: '200px' }"
       />
@@ -166,6 +167,10 @@ function getQeq() {
       body: JSON.stringify(data),
     });
   }
+}
+
+function openImg(item) {
+  window.open(item.largeUrl);
 }
 </script>
 
