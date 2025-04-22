@@ -1,7 +1,7 @@
 <template>
   <div class="header">
     <div class="content">
-      <input class="search" type="text" placeholder="搜索..." />
+      <!--      <input class="search" type="text" placeholder="搜索..." />-->
       <span
         class="type"
         @click="emit('typeChange', type === 'phone' ? 'pc' : 'phone')"
@@ -25,7 +25,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref } from "vue";
 
 const darkImg = require("@/assets/image/dark.svg");
 const lightImg = require("@/assets/image/light.svg");
@@ -66,6 +66,8 @@ function themeChange() {
 
   border-bottom: 1px solid hsl(var(--border));
 
+  background: hsl(var(--background));
+
   .content {
     height: 100%;
 
@@ -87,7 +89,7 @@ function themeChange() {
       height: 32px;
       width: 256px;
 
-      border-radius: 4px;
+      border-radius: 8px;
 
       margin-right: 16px;
 
@@ -104,7 +106,7 @@ function themeChange() {
     }
 
     .type {
-      border-radius: 4px;
+      border-radius: 8px;
 
       cursor: pointer;
 
@@ -126,7 +128,7 @@ function themeChange() {
     .theme {
       padding: 4px 8px;
 
-      border-radius: 4px;
+      border-radius: 8px;
 
       cursor: pointer;
 

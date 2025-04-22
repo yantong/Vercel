@@ -1,5 +1,5 @@
 <template>
-  <div class="imgs">
+  <div class="imgs pcWallpaper">
     <div class="content"></div>
   </div>
 </template>
@@ -7,10 +7,12 @@
 <script setup></script>
 
 <style scoped lang="less">
-.imgs {
+.pcWallpaper {
   margin-left: auto;
   margin-right: auto;
   width: 100%;
+
+  background: hsl(var(--background));
 
   .content {
     height: 100%;
