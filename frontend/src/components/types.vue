@@ -89,7 +89,8 @@ onMounted(async () => {
   await getPhoneCategoryData();
   await getPcCategoryData();
 
-  emit("categoryChange", phoneCatagorys.value[0]);
+  // emit("categoryChange", phoneCatagorys.value[0]);
+  emit("categoryChange", pcCatagorys.value[0]);
   emit("categorySubChange", sortTypes[0]);
 });
 
@@ -98,6 +99,8 @@ onMounted(() => {
 
   catagorys.addEventListener("wheel", function (e) {
     catagorys.scrollLeft += e.deltaY;
+
+    e.preventDefault();
   });
 });
 
@@ -111,6 +114,8 @@ watch(
     }
 
     emit("categorySubChange", sortTypes[0]);
+
+    catagorys.scrollLeft = 0;
   }
 );
 

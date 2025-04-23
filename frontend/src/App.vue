@@ -15,7 +15,11 @@
         :selCategory="selCategory"
         :selCategorySub="selCategorySub"
       />
-      <pcWallpaper v-else />
+      <pcWallpaper
+        v-else
+        :selCategory="selCategory"
+        :selCategorySub="selCategorySub"
+      />
     </template>
   </div>
 </template>
@@ -28,7 +32,7 @@ import types from "./components/types.vue";
 import phoneWallpaper from "./components/phoneWallpaper.vue";
 import pcWallpaper from "./components/pcWallpaper.vue";
 
-const type = ref("phone");
+const type = ref("pc");
 const selCategory = ref();
 const selCategorySub = ref();
 </script>
@@ -45,7 +49,7 @@ body {
   }
 
   #app {
-    height: 100%;
+    min-height: 100%;
 
     .types {
       position: fixed;
