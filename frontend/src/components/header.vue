@@ -1,20 +1,33 @@
 <template>
   <div class="header">
     <div class="content">
-      <!--      <input class="search" type="text" placeholder="搜索..." />-->
+      <input
+        class="search"
+        type="text"
+        placeholder="搜索..."
+        :value="searchWord"
+        @keyup.enter="
+          emit('isSearchChange', true);
+          emit('searchWordChange', $event.target.value);
+        "
+      />
       <span
         class="type"
-        @click="emit('typeChange', type === 'phone' ? 'pc' : 'phone')"
+        @click="
+          emit('typeChange', type === 'phone' ? 'pc' : 'phone');
+          emit('isSearchChange', false);
+          emit('searchWordChange', '');
+        "
       >
         <img
           :src="theme !== 'light' ? phonelightImg : phoneImg"
           alt=""
-          v-show="type === 'phone'"
+          v-show="type === 'pc'"
         />
         <img
           :src="theme !== 'light' ? pclightImg : pcImg"
           alt=""
-          v-show="type === 'pc'"
+          v-show="type === 'phone'"
         />
       </span>
       <span class="theme" @click="themeChange">
@@ -39,9 +52,17 @@ const props = defineProps({
     type: String,
     default: "phone",
   },
+  searchWord: {
+    type: String,
+    default: "",
+  },
+  isSearch: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-const emit = defineEmits(["typeChange"]);
+const emit = defineEmits(["typeChange", "isSearchChange", "searchWordChange"]);
 
 const theme = ref("light");
 
@@ -59,14 +80,11 @@ function themeChange() {
 
   height: 56px;
 
-  position: sticky;
-  top: 0;
-
   backdrop-filter: blur(8px);
 
   border-bottom: 1px solid hsl(var(--border));
 
-  background: hsl(var(--background));
+  background: hsl(var(--background) / 0.8);
 
   .content {
     height: 100%;

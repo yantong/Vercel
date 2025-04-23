@@ -1,8 +1,16 @@
 <template>
   <div>
-    <headerCom :type="type" @typeChange="type = $event" />
+    <headerCom
+      :type="type"
+      :searchWord="searchWord"
+      :isSearch="isSearch"
+      @searchWordChange="searchWord = $event"
+      @isSearchChange="isSearch = $event"
+      @typeChange="type = $event"
+    />
     <types
       :type="type"
+      :isSearch="isSearch"
       :selCategory="selCategory"
       :selCategorySub="selCategorySub"
       @categoryChange="selCategory = $event"
@@ -10,8 +18,13 @@
     />
 
     <template v-if="selCategory">
+      <searchWallpaper
+        v-if="isSearch"
+        :selCategory="selCategory"
+        :searchWord="searchWord"
+      />
       <phoneWallpaper
-        v-if="type === 'phone'"
+        v-else-if="type === 'phone'"
         :selCategory="selCategory"
         :selCategorySub="selCategorySub"
       />
@@ -31,8 +44,13 @@ import headerCom from "./components/header.vue";
 import types from "./components/types.vue";
 import phoneWallpaper from "./components/phoneWallpaper.vue";
 import pcWallpaper from "./components/pcWallpaper.vue";
+import searchWallpaper from "./components/searchWallpaper.vue";
 
 const type = ref("pc");
+
+const isSearch = ref(false);
+const searchWord = ref("");
+
 const selCategory = ref();
 const selCategorySub = ref();
 </script>
@@ -51,6 +69,12 @@ body {
   #app {
     min-height: 100%;
 
+    .header {
+      position: fixed;
+
+      top: 0;
+    }
+
     .types {
       position: fixed;
 
@@ -60,7 +84,7 @@ body {
     }
 
     .imgs {
-      padding-top: 55px;
+      padding-top: calc(55px + 54px);
 
       .content {
         min-height: calc(100vh - (56px + 55px));

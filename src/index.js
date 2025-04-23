@@ -52,6 +52,7 @@ reqRedirect("/wallpaper/v2/home/imageList")
 reqRedirect("/wallpaper/v2/search/commonList")
 reqRedirect("/wallpaper/v2/channel/queryByCategory")
 reqRedirect("/wallpaper/v1/search/pcScreen")
+reqRedirect("/wallpaper/v1/search/inSizeType")
 
 reqRedirectGet("/wallpaper/api/v1/association/list")
 

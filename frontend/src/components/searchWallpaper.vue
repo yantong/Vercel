@@ -1,11 +1,13 @@
 <template>
-  <div class="imgs pcWallpaper">
+  <div class="imgs phoneWallpaper">
     <div class="content">
       <div
         v-for="(col, index) in imgCols"
         :key="index"
         class="col"
-        :style="{ width: `calc(${100 / (imgCols.length + 0.2)}%)` }"
+        :style="{
+          width: `calc(${100 / (imgCols.length + (isPc ? 0.2 : 0.5))}%)`,
+        }"
       >
         <template v-for="item in col" :key="item.thumbUrl">
           <img
@@ -34,9 +36,8 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { hexMD5 } from "@/utils/md5";
-import axios from "axios";
 
 const props = defineProps({
   selCategory: {
@@ -48,14 +49,9 @@ const props = defineProps({
       };
     },
   },
-  selCategorySub: {
-    type: Object,
-    default: () => {
-      return {
-        name: "热门",
-        code: "0",
-      };
-    },
+  searchWord: {
+    type: String,
+    default: "",
   },
 });
 
@@ -65,6 +61,14 @@ const errorImg = ref({});
 
 const loading = ref(false);
 const finished = ref(false);
+
+const isPc = computed(() => {
+  let categoryName = props.selCategory.categoryName;
+
+  return (
+    categoryName.indexOf("电脑壁纸") >= 0 || categoryName.indexOf("横屏") >= 0
+  );
+});
 
 let reqId = 0;
 let curPage = 0;
@@ -83,9 +87,11 @@ onBeforeUnmount(() => {
   window.removeEventListener("scroll", bottomReached);
 });
 
-watch(() => [props.selCategory, props.selCategorySub], initList);
+watch(() => [props.searchWord, props.selCategory], initList);
 
 async function initList() {
+  imgCols.value = [];
+
   finished.value = false;
   listData.value = [];
   curPage = 0;
@@ -102,40 +108,89 @@ async function getList() {
 
   let id = (reqId = Math.random());
 
-  let params = { sort_type: props.selCategorySub.code, page: curPage };
-
-  props.selCategory.requestParams.sizeType !== undefined &&
-    (params.size_type = props.selCategory.requestParams.sizeType);
-  props.selCategory.requestParams.searchWord !== undefined &&
-    (params.search_word = props.selCategory.requestParams.searchWord);
-
-  let res = await fetch("/wallpaper/v1/search/pcScreen", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(params),
-  });
+  let res = await getQeq();
   let data = await res.json();
 
   curPage++;
 
   reqId == id &&
     listData.value.push(
-      ...data.filter((item) => {
+      ...(data || []).filter((item) => {
         return !listData.value.find((img) => img.thumbUrl == item.thumbUrl);
       })
     );
-
-  finished.value = !data.length;
+  finished.value = !data?.length;
 
   calcPosition();
 
   loading.value = false;
 }
 
+function getQeq() {
+  let categoryName = props.selCategory.categoryName;
+  if (
+    [
+      "高清壁纸",
+      "2k壁纸",
+      "4k壁纸",
+      "全面屏壁纸",
+      "1K横屏",
+      "2K横屏",
+      "4K横屏",
+      "5K横屏",
+      "8K横屏",
+    ].includes(categoryName)
+  ) {
+    let data = {
+      page: curPage,
+      word: props.searchWord,
+    };
+    data.size_type = props.selCategory.requestParams.sizeType;
+
+    data.sign = hexMD5(
+      `${`page=${curPage}&size_type=${data.size_type}`}&key=d9fd3ec394`
+    ).toUpperCase();
+
+    return fetch("/wallpaper/v1/search/inSizeType", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+  } else if (["平板壁纸"].includes(categoryName)) {
+    let data = {
+      page: curPage,
+      search_word: props.searchWord,
+      table_type: props.selCategory.requestParams.tableType,
+    };
+
+    data.sign = hexMD5(
+      `page=${data.page}&search_word=${props.searchWord}&table_type=${data.table_type}&key=d9fd3ec394`
+    ).toUpperCase();
+
+    return fetch("/wallpaper/v2/search/commonList", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+  } else if (["电脑壁纸"].includes(categoryName)) {
+    let data = { size_type: 0, page: curPage, search_word: props.searchWord };
+
+    return fetch("/wallpaper/v1/search/pcScreen", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+  }
+}
+
 function calcPosition() {
-  let colNum = 4;
+  let colNum = isPc.value ? 4 : 6;
   let heights = new Array(colNum).fill(0);
   let cols = new Array(colNum);
 
@@ -192,7 +247,7 @@ function bottomReached() {
 </script>
 
 <style scoped lang="less">
-.pcWallpaper {
+.phoneWallpaper {
   margin-left: auto;
   margin-right: auto;
   width: 100%;

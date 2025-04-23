@@ -82,8 +82,7 @@ onBeforeUnmount(() => {
   window.removeEventListener("scroll", bottomReached);
 });
 
-watch(() => props.selCategory, initList);
-watch(() => props.selCategorySub, initList);
+watch(() => [props.selCategory, props.selCategorySub], initList);
 
 async function initList() {
   finished.value = false;

@@ -3,7 +3,11 @@
     <div class="content">
       <div class="catagorys" id="catagorys">
         <span
-          v-for="item in type === 'phone' ? phoneCatagorys : pcCatagorys"
+          v-for="item in isSearch
+            ? searchCatagorys
+            : type === 'phone'
+            ? phoneCatagorys
+            : pcCatagorys"
           :key="item.categoryName"
           @click="emit('categoryChange', item)"
           class="item"
@@ -14,7 +18,7 @@
       </div>
       <div
         class="sub-catagorys"
-        v-show="type !== 'phone' || showSort(selCategory)"
+        v-show="!isSearch && (type !== 'phone' || showSort(selCategory))"
       >
         <span
           v-for="item in sortTypes"
@@ -56,6 +60,10 @@ const props = defineProps({
       };
     },
   },
+  isSearch: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const emit = defineEmits(["categoryChange", "categorySubChange"]);
@@ -63,6 +71,7 @@ const emit = defineEmits(["categoryChange", "categorySubChange"]);
 const allTypes = ref([]);
 const phoneCatagorys = ref([]);
 const pcCatagorys = ref([]);
+const searchCatagorys = ref([]);
 
 const sortTypes = [
   {
@@ -86,10 +95,10 @@ const sortTypes = [
 onMounted(async () => {
   await getAllTypes();
 
-  await getPhoneCategoryData();
   await getPcCategoryData();
+  getPhoneCategoryData();
+  getSearchCategoryData();
 
-  // emit("categoryChange", phoneCatagorys.value[0]);
   emit("categoryChange", pcCatagorys.value[0]);
   emit("categorySubChange", sortTypes[0]);
 });
@@ -105,11 +114,15 @@ onMounted(() => {
 });
 
 watch(
-  () => props.type,
+  () => [props.type, props.isSearch],
   () => {
-    if (props.type === "phone") {
+    let catagorys = document.getElementById("catagorys");
+
+    if (props.isSearch) {
+      emit("categoryChange", searchCatagorys.value[0]);
+    } else if (props.type === "phone") {
       emit("categoryChange", phoneCatagorys.value[0]);
-    } else {
+    } else if (props.type === "pc") {
       emit("categoryChange", pcCatagorys.value[0]);
     }
 
@@ -169,6 +182,49 @@ async function getPcCategoryData() {
   pcCatagorys.value = await res.json();
 }
 
+async function getSearchCategoryData() {
+  const categoryConfigKey = "stsq_web_image_search_config";
+
+  let res = await fetch("wallpaper/v1/config/queryConfig", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      config_key: categoryConfigKey,
+    }),
+  });
+  let data = await res.json();
+
+  let categorysTemp = [];
+
+  let computer = data.find((item) => item.engineName == "电脑壁纸");
+  let phone = data.find((item) => item.engineName == "手机壁纸");
+
+  categorysTemp.push(
+    ...computer.list.map((item) => {
+      let engineName = item.engineName;
+
+      if (engineName == "全部") engineName = "电脑壁纸";
+      else if (engineName.indexOf("壁纸") >= 0)
+        engineName = engineName.replace("壁纸", "横屏");
+
+      return {
+        ...item,
+        engineName,
+      };
+    })
+  );
+  categorysTemp.push(...phone.list);
+
+  searchCatagorys.value = categorysTemp.map((item) => {
+    return {
+      ...item,
+      categoryName: item.engineName,
+    };
+  });
+}
+
 function showSort(category) {
   return [
     "精选",
@@ -189,9 +245,11 @@ function showSort(category) {
   margin-right: auto;
   width: 100%;
 
+  backdrop-filter: blur(8px);
+
   border-bottom: 1px solid hsl(var(--border));
 
-  background: hsl(var(--background));
+  background: hsl(var(--background) / 0.8);
 
   .content {
     margin-left: auto;
