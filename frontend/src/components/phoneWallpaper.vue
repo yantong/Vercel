@@ -170,9 +170,9 @@ function getQeq() {
 }
 
 function getUrl(item) {
-  let hbUrl = 'http://img.hb.aicdn.com';
+  let hbUrl = "http://img.hb.aicdn.com";
 
-  if(item.thumbUrl.indexOf(hbUrl) >= 0) {
+  if (item.thumbUrl.indexOf(hbUrl) >= 0) {
     return item.thumbUrl.replace(hbUrl, "https://hbimg.huaban.com");
   }
 
