@@ -4,7 +4,7 @@
       <img
         v-for="item in listData"
         :key="item.thumbUrl"
-        :src="item.thumbUrl"
+        :src="getUrl(item)"
         @click="openImg(item)"
         alt=""
         :style="{ 'aspect-ratio': item.width / item.height, height: '200px' }"
@@ -167,6 +167,16 @@ function getQeq() {
       body: JSON.stringify(data),
     });
   }
+}
+
+function getUrl(item) {
+  let hbUrl = 'http://img.hb.aicdn.com';
+
+  if(item.thumbUrl.indexOf(hbUrl) >= 0) {
+    return item.thumbUrl.replace(hbUrl, "https://hbimg.huaban.com");
+  }
+
+  return item.thumbUrl;
 }
 
 function openImg(item) {
