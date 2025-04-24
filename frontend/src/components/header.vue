@@ -33,6 +33,9 @@
       <span class="theme" @click="themeChange">
         <img :src="theme !== 'light' ? lightImg : darkImg" alt="" />
       </span>
+      <span class="refresh" @click="emit('refresh')">
+        <img :src="theme !== 'light' ? refreshLightImg : refreshImg" alt="" />
+      </span>
     </div>
   </div>
 </template>
@@ -46,6 +49,8 @@ const phoneImg = require("@/assets/image/phone.svg");
 const phonelightImg = require("@/assets/image/phone-light.svg");
 const pcImg = require("@/assets/image/pc.svg");
 const pclightImg = require("@/assets/image/pc-light.svg");
+const refreshImg = require("@/assets/image/refresh.svg");
+const refreshLightImg = require("@/assets/image/refresh-light.svg");
 
 const props = defineProps({
   type: {
@@ -62,7 +67,12 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["typeChange", "isSearchChange", "searchWordChange"]);
+const emit = defineEmits([
+  "typeChange",
+  "isSearchChange",
+  "searchWordChange",
+  "refresh",
+]);
 
 const theme = ref("light");
 
@@ -150,8 +160,28 @@ function themeChange() {
 
       cursor: pointer;
 
+      margin-right: 8px;
+
       img {
         width: 16px;
+        height: 16px;
+      }
+
+      &:hover {
+        background-color: hsl(var(--accent));
+      }
+    }
+
+    .refresh {
+      padding: 4px 8px;
+
+      border-radius: 8px;
+
+      cursor: pointer;
+
+      img {
+        width: 16px;
+        height: 16px;
       }
 
       &:hover {

@@ -7,6 +7,7 @@
       @searchWordChange="searchWord = $event"
       @isSearchChange="isSearch = $event"
       @typeChange="type = $event"
+      @refresh="paper.initList()"
     />
     <types
       :type="type"
@@ -22,23 +23,26 @@
         v-if="isSearch"
         :selCategory="selCategory"
         :searchWord="searchWord"
+        ref="paper"
       />
       <phoneWallpaper
         v-else-if="type === 'phone'"
         :selCategory="selCategory"
         :selCategorySub="selCategorySub"
+        ref="paper"
       />
       <pcWallpaper
         v-else
         :selCategory="selCategory"
         :selCategorySub="selCategorySub"
+        ref="paper"
       />
     </template>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import {ref, useTemplateRef} from "vue";
 
 import headerCom from "./components/header.vue";
 import types from "./components/types.vue";
@@ -53,6 +57,8 @@ const searchWord = ref("");
 
 const selCategory = ref();
 const selCategorySub = ref();
+
+const paper = useTemplateRef("paper");
 </script>
 
 <style lang="less">

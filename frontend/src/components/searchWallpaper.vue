@@ -124,6 +124,10 @@ function getQeq(curPage) {
     });
   }
 }
+
+defineExpose({
+  initList,
+});
 </script>
 
 <style scoped lang="less">

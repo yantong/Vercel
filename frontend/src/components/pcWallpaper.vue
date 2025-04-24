@@ -70,6 +70,10 @@ async function getData(curPage) {
 
   return reqId === id ? data : null;
 }
+
+defineExpose({
+  initList,
+});
 </script>
 
 <style scoped lang="less">
