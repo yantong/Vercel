@@ -21,12 +21,30 @@ app.use(bodyParser.urlencoded({
 
 app.use(express.static(parentDirPath + '/public'));
 
+
+let allTypes = []
+
+async function getAlltypes() {
+    let data = new FormData()
+
+    data.append('config_key', "stsq_web_image_feature_config")
+
+    let result = await axios.post(baseUrl + '/v1/config/queryConfig', data, {})
+
+    allTypes = result.data.data
+}
+
+
 function reqRedirect(url) {
     app.post(url, async (req, res) => {
+        if (req.body.config_key === 'stsq_web_image_feature_config' && allTypes.length) {
+            res.send(allTypes)
+        }
+
         let url = req.url.replace('/wallpaper', baseUrl)
         let data = new FormData()
 
-         for (const key in req.body) {
+        for (const key in req.body) {
             data.append(key, req.body[key])
         }
 
@@ -46,6 +64,7 @@ function reqRedirectGet(url) {
     });
 }
 
+getAlltypes()
 
 reqRedirect("/wallpaper/v1/config/queryConfig")
 reqRedirect("/wallpaper/v2/home/imageList")
