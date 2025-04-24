@@ -11,4 +11,12 @@ module.exports = defineConfig({
       },
     },
   },
+
+  chainWebpack: (config) => {
+    if (process.env.NODE_ENV === "production") {
+      config.externals({
+        vue: "Vue",
+      });
+    }
+  },
 });
