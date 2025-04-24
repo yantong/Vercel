@@ -17,6 +17,11 @@ module.exports = defineConfig({
       config.externals({
         vue: "Vue",
       });
+
+      config.plugin("html").tap((args) => {
+        args[0].cdn = "prod";
+        return args;
+      });
     }
   },
 });
