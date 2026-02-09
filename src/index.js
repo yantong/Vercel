@@ -16,12 +16,10 @@ const initialModelReqCountMap = {
   "Qwen/Qwen3-235B-A22B-Instruct-2507": 100,
   "Qwen/Qwen3-235B-A22B": 100,
   "XiaomiMiMo/MiMo-V2-Flash": 100,
-
   "moonshotai/Kimi-K2.5": 200,
   "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B": 200,
-
-  "ZhipuAI/GLM-4.7": 100,
   "Qwen/Qwen3-235B-A22B-Thinking-2507": 100,
+  "ZhipuAI/GLM-4.7": 100,
   "MiniMax/MiniMax-M1-80k": 100,
 };
 
@@ -119,6 +117,8 @@ async function callQwenModel(res, lyrics) {
 ]
 
 最后生成一个json，需要检查json格式的正确性，生成的json需要美化，添加缩进，要能直接复制使用。
+
+只需要返回json，不需要其他的内容，不需要${"```json"}开头和${"```"}结尾。
 
 歌词如下：
 ${lyrics}
