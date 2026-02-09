@@ -1,9 +1,11 @@
 const axios = require("axios");
 
+let isLocal = true;
+
 async function sendChatRequest() {
   try {
     const response = await axios.post(
-      "http://localhost:3000/chat",
+      isLocal ? "http://localhost:3000/chat" : "https://www.qiuye.asia/chat",
       {
         lyrics: `たったひとつのハートで
 守（まも）りたいんだ きみを`,

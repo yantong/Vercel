@@ -10,12 +10,63 @@ const client = new OpenAI({
   baseURL: "https://api-inference.modelscope.cn/v1/",
 });
 
+const initialModelReqCountMap = {
+  "deepseek-ai/DeepSeek-V3.2": 100,
+  "deepseek-ai/DeepSeek-R1-0528": 100,
+  "Qwen/Qwen3-235B-A22B-Instruct-2507": 100,
+  "Qwen/Qwen3-235B-A22B": 100,
+  "XiaomiMiMo/MiMo-V2-Flash": 100,
+
+  "moonshotai/Kimi-K2.5": 200,
+  "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B": 200,
+
+  "ZhipuAI/GLM-4.7": 100,
+  "Qwen/Qwen3-235B-A22B-Thinking-2507": 100,
+  "MiniMax/MiniMax-M1-80k": 100,
+};
+
+let modelReqCountMap = { ...initialModelReqCountMap };
+let lastResetDate = new Date().toDateString();
+
+function resetModelCountsIfNeeded() {
+  const today = new Date().toDateString();
+  if (today !== lastResetDate) {
+    modelReqCountMap = { ...initialModelReqCountMap };
+    lastResetDate = today;
+    console.log("模型调用次数已重置");
+  }
+}
+
+function getNextAvailableModel() {
+  resetModelCountsIfNeeded();
+  for (const [model, count] of Object.entries(modelReqCountMap)) {
+    if (count > 0) {
+      return model;
+    }
+  }
+  return null;
+}
+
+function decrementModelCount(model) {
+  if (modelReqCountMap[model] > 0) {
+    modelReqCountMap[model]--;
+    console.log(`模型 ${model} 剩余次数: ${modelReqCountMap[model]}`);
+  }
+}
+
 // 流式调用模型的异步函数
 async function callQwenModel(res, lyrics) {
   try {
+    const model = getNextAvailableModel();
+    if (!model) {
+      return res.status(500).send("所有模型今日调用次数已用完");
+    }
+
+    decrementModelCount(model);
+
     // 创建流式聊天补全请求
     const stream = await client.chat.completions.create({
-      model: "moonshotai/Kimi-K2.5", // ModelScope 模型ID
+      model: model, // ModelScope 模型ID
       messages: [
         {
           role: "system",
@@ -39,7 +90,33 @@ async function callQwenModel(res, lyrics) {
 
  输出一个数组，数组的每个元素是一个对象，包含fanyi和dancizu两个字段，fanyi字段是这个句子的中文翻译，dancizu字段是个数组，dancizu数组的每个元素是一个对象，包含danci和miaoshu两个字段，其中danci是分割出来的单词，miaoshu字段是单词的语法描述，语法描述需要包含对它的词性、核心含义、用法 / 拓展 + 歌词语境描述，形容词备注是几类形容词，动词备注是几类动词，用的什么时态什么变形并显示动词的原型。miaoshu中的引号使用单引号。
 
-如果有相同的句子，可以直接使用已经转换完成的数据。
+ json示例如下：
+[
+    {
+        "fanyi": "想要守护你",
+        "dancizu": [
+            {
+                "danci": "守（まも）り",
+                "miaoshu": "動詞。原形为'守る（まもる）'，属于一类动词 （五段動詞）。核心含义是'保护、守护、遵守'。此为ます形連用形（'守ります'去 掉'ます'），后续'たい'表示愿望。在歌词语境中，表达强烈的保护欲。变形详解： 原形'守る' → ます形连用形'守り'（规则：词尾う段假名'る'变为同行い段假名'り'）。"
+            },
+            {
+                "danci": "たい",
+                "miaoshu": "助動詞（願望助動詞）。接在动词ます形连用形 后，表示第一人称（或推測第二、三人称）'想要做...'的愿望。核心含义是'想、希 望'。变形详解：属于形容词型变化，此处为终止形（简体）。在歌词中，'んだ'是其强调表达的一部分。"
+            },
+            {
+                "danci": "んだ",
+                "miaoshu": "助動詞（強調表達）。完整形式为'のだ'，口语 中常音便为'んだ'。接在用言（动词、形容词等）连体形或'名词+な'之后，用于说明原因、强调主张、抒发情感。此处接在'たい'（形容词型助动词，连体形同基本形） 后，强烈表达内心的想法和决心。语法功能：終助詞的な用法，加强语气。特殊表达 ：'守りたいんだ'是'守りたいのだ'的口語省略形，使发音更流畅，情感更直接。"  
+            },
+            {
+                "danci": "きみ",
+                "miaoshu": "名詞（代名詞）。核心含义是'你'，较親昵或对 同辈、晚辈的称呼。汉字可写为'君'。在歌词语境中，指想要守护的对象，带有亲密 感。"
+            },
+                "danci": "を",
+                "miaoshu": "助詞（格助詞）。核心含义是表示他动词的'直接宾语'（動作的對象）。此处接在宾语'きみ'后，表示'守护'这个动作的对象是'你'。用法/拓展：构成'を'格宾语。"
+            }
+        ]
+    }
+]
 
 最后生成一个json，需要检查json格式的正确性，生成的json需要美化，添加缩进，要能直接复制使用。
 
