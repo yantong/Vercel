@@ -7,13 +7,16 @@ app.use(express.json());
 // 添加 CORS 支持
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS",
+  );
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  
+
   if (req.method === "OPTIONS") {
     return res.status(204).end();
   }
-  
+
   next();
 });
 
@@ -261,17 +264,20 @@ ${lyrics}
     });
 
     // 设置响应头
-    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
     res.setHeader("Transfer-Encoding", "chunked");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
 
     // 遍历流式响应并输出内容
     for await (const chunk of stream) {
       const content = chunk.choices[0]?.delta?.content;
       if (content) {
-        res.write(content);
+        res.write(`data: ${content}\n\n`);
       }
     }
 
+    res.write("data: [DONE]\n\n");
     res.end();
   } catch (error) {
     console.error("调用模型出错：", error.message);
