@@ -4,6 +4,19 @@ const OpenAI = require("openai");
 const app = express();
 app.use(express.json());
 
+// 添加 CORS 支持
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  
+  if (req.method === "OPTIONS") {
+    return res.status(204).end();
+  }
+  
+  next();
+});
+
 // 初始化客户端
 const client = new OpenAI({
   apiKey: "ms-f726b559-a7ed-408c-a13f-465c82d43b88", // 替换为你的 ModelScope Access Token
@@ -11,8 +24,8 @@ const client = new OpenAI({
 });
 
 const initialModelReqCountMap = {
-  "deepseek-ai/DeepSeek-V3.2": 100,
-  "deepseek-ai/DeepSeek-R1-0528": 100,
+  // "deepseek-ai/DeepSeek-V3.2": 100,
+  // "deepseek-ai/DeepSeek-R1-0528": 100,
   "moonshotai/Kimi-K2.5": 500,
 };
 
