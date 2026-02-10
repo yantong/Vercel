@@ -5,5 +5,13 @@
       "source": "/(.*)",
       "destination": "/api"
     }
-  ]
+  ],
+  "functions": {
+    "api/**/*": {
+      "maxDuration": 1800
+    },
+    "/chat": {
+      "maxDuration": 1800
+    }
+  }
 }
