@@ -273,7 +273,7 @@ ${lyrics}
     for await (const chunk of stream) {
       const content = chunk.choices[0]?.delta?.content;
       if (content) {
-        res.write(`data: ${content}\n\n`);
+        res.write(`data: ${content.replaceAll("\n", "")}\n\n`);
       }
     }
 
