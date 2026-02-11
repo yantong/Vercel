@@ -27,8 +27,8 @@ const client = new OpenAI({
 });
 
 const initialModelReqCountMap = {
-  "meituan-longcat/LongCat-Flash-Lite": "500",
   "Qwen/Qwen3-Next-80B-A3B-Instruct": "500",
+  "meituan-longcat/LongCat-Flash-Lite": "50",
   "deepseek-ai/DeepSeek-V3.2": 100,
   "moonshotai/Kimi-K2.5": 50,
 };
@@ -112,13 +112,14 @@ yufa：语法说明（词性、分类、时态、变形）
 hanyi：单词中文含义
 yuanxing：单词原型（与原形相同时省略此字段）
 kuozhan：扩展用法 + 歌词语境说明
+如果有标点符号，标点符号也作为一个单词处理。
 输出只返回 JSON，无解释、无注释、无代码块包裹,不需要以${"```json"}开头和${"```"}结尾。
 需要严格检查JSON的格式是否正确。
 
 json示例如下：
 [
   {
-    "fanyi": " 凭着一颗心 就想保护你 ",
+    "fanyi": " 凭着一颗心,就想保护你 ",
     "cizu": [
       {
         "danci": " たった ",
@@ -159,6 +160,9 @@ json示例如下：
         "hanyi": " 用，以，通过（某种工具 / 方式）",
         "yuanxing": " で ",
         "kuozhan": " 歌词语境中表示 '凭着（心）'，强调凭借的手段，是日语中表达方式 / 工具的核心助词 "
+      },
+      {
+        "danci": " , ",
       },
       {
         "danci": " 守（まも）り ",
@@ -211,7 +215,7 @@ json示例如下：
     ]
   },
   {
-    "fanyi": " 能遇见你真好 那个人是你真好 ",
+    "fanyi": " 能遇见你真好,那个人是你真好 ",
     "cizu": [
       {
         "danci": " 逢（あ）えて ",
@@ -228,6 +232,9 @@ json示例如下：
         "hanyi": " 真好，太好了，幸好 ",
         "yuanxing": " よい（いい）",
         "kuozhan": " 歌词语境中表达遇见对方后的庆幸和喜悦，过去式强调 '遇见' 这个动作带来的美好结果 "
+      },
+      {
+        "danci": " , ",
       },
       {
         "danci": " きみ ",
