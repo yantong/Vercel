@@ -27,10 +27,10 @@ const client = new OpenAI({
 });
 
 const initialModelReqCountMap = {
-    "meituan-longcat/LongCat-Flash-Lite": "500",
-    "Qwen/Qwen3-Next-80B-A3B-Instruct": "500",
-    "deepseek-ai/DeepSeek-V3.2": 100,
-    "moonshotai/Kimi-K2.5": 50
+  "meituan-longcat/LongCat-Flash-Lite": "500",
+  "Qwen/Qwen3-Next-80B-A3B-Instruct": "500",
+  "deepseek-ai/DeepSeek-V3.2": 100,
+  "moonshotai/Kimi-K2.5": 50,
 };
 
 let modelReqCountMap = { ...initialModelReqCountMap };
@@ -289,6 +289,62 @@ ${lyrics}
   }
 }
 
+async function callAnalysis(res, lyrics) {
+  try {
+    const model = getNextAvailableModel();
+    if (!model) {
+      return res.status(500).send("所有模型今日调用次数已用完");
+    }
+
+    decrementModelCount(model);
+
+    // 创建非流式聊天补全请求
+    const response = await client.chat.completions.create({
+      model: model, // ModelScope 模型ID
+      messages: [
+        {
+          role: "system",
+          content: `你是资深日语语言专家，深耕日语歌词类生活化表达分析，精通日语基础语法、词汇活用、动词 / 形容词变形规则、汉字音读训读，熟悉日语歌词的口语化省略、韵律化表达特点。请针对我提供的日语歌词单句 / 单段 / 单个单词，按结构化、精细化的方式完成全维度分析，适配日语学习和歌词理解需求，具体分析要求如下：
+单词解析：每个单词标注假名（汉字单独标注音读 / 训读）、词性、语境专属释义、常见活用形式；
+分词拆解：对句子进行精准分词，用分隔符清晰划分，标注分词依据；
+语法分析：标注句子各成分（主 / 谓 / 宾 / 定 / 状 / 补）、核心语法点（助词 / 助动词 / 句式用法）、语法功能及使用场景；
+变形详解：涉及动词 / 形容词 / 形容动词 / 助动词变形时，明确原词、变形类型、完整变形规则、歌词中使用该变形的原因（如韵律、语气、时态等）；
+特殊表达：标注歌词中的口语省略、固定搭配、惯用句、韵律化改写等特殊点，补充常规表达形式；
+翻译解读：先给出逐词直译，再给出贴合歌词意境的中文意译，兼顾语义准确和文学性；
+总结提示：用 1-2 句话总结该句的核心语法重点和学习要点，便于快速掌握。
+分析结果请按逻辑分点 / 分模块呈现，避免晦涩术语，术语需附带简单解释，所有标注精准无误差，适配日语学习者的理解节奏。`,
+        },
+        {
+          role: "user",
+          content: `请对输入的日语歌词进行语义与句式分析：
+精准识别语义完整的同一句歌词，将归属同一句的内容合并至同一行，内容间用逗号分隔。
+按语义句逐行分行重新输出，仅保留整理后的歌词文本。
+无额外解释、无标注、无格式冗余，仅输出纯分析整理后的歌词内容。
+
+歌词如下：
+${lyrics}
+`,
+        },
+      ],
+      stream: false, // 关闭流式输出
+    });
+
+    // 获取完整响应内容
+    const content = response.choices[0]?.message?.content;
+    if (content) {
+      res.setHeader("Content-Type", "text/plain; charset=utf-8");
+      res.send(content);
+    } else {
+      res.status(500).send("模型未返回分析结果");
+    }
+  } catch (error) {
+    console.error("调用模型出错：", error.message);
+    if (!res.headersSent) {
+      res.status(500).send("调用模型出错");
+    }
+  }
+}
+
 app.post("/chat", async (req, res) => {
   const { lyrics } = req.body;
 
@@ -297,6 +353,16 @@ app.post("/chat", async (req, res) => {
   }
 
   await callQwenModel(res, lyrics);
+});
+
+app.post("/analysis", async (req, res) => {
+  const { lyrics } = req.body;
+
+  if (!lyrics) {
+    return res.status(400).send("缺少 lyrics 参数");
+  }
+
+  await callAnalysis(res, lyrics);
 });
 
 app.listen(3000, () => console.log("Server ready on port 3000."));
