@@ -27,7 +27,7 @@ const client = new OpenAI({
 });
 
 const initialModelReqCountMap = {
-  "Qwen/Qwen3-235B-A22B-Instruct-2507": 500,
+  "Qwen/Qwen3-Coder-480B-A35B-Instruct": 100,
   "meituan-longcat/LongCat-Flash-Lite": "50",
   "deepseek-ai/DeepSeek-V3.2": 100,
   "moonshotai/Kimi-K2.5": 50,
@@ -325,6 +325,7 @@ async function callAnalysis(res, lyrics) {
           content: `将句子分行，忽略掉中文翻译，只保留日语歌词，必须把日语歌词保持原样不能进行修改，然后把每行当作一个单独的句子。
           精准识别语义，将相关联的多行歌词合并成一个数组，最多合并4行。
           最后将这些数组合并成一个二维数组返回，只输出最终 JSON，无任何多余内容。
+          输出只返回 JSON，无解释、无注释、无代码块包裹,不需要以${"```json"}开头和${"```"}结尾。
 
 歌词如下：
 ${lyrics}
