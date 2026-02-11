@@ -27,6 +27,8 @@ const client = new OpenAI({
 });
 
 const initialModelReqCountMap = {
+    "deepseek-ai/DeepSeek-V3.2": 100,
+    "deepseek-ai/DeepSeek-R1-0528": 100,
     "meituan-longcat/LongCat-Flash-Lite": "500",
     "moonshotai/Kimi-K2.5": 50,
 };
