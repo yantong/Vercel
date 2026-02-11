@@ -27,7 +27,7 @@ const client = new OpenAI({
 });
 
 const initialModelReqCountMap = {
-  "Qwen/Qwen3-VL-30B-A3B-Instruct": "500",
+  "Qwen/Qwen3-235B-A22B-Instruct-2507": "500",
   "meituan-longcat/LongCat-Flash-Lite": "50",
   "deepseek-ai/DeepSeek-V3.2": 100,
   "moonshotai/Kimi-K2.5": 50,
@@ -101,7 +101,7 @@ async function callQwenModel(res, lyrics) {
 助词、副词、连词等标注清楚词性与功能
 翻译原则：有原译直接沿用，无原译则结合歌词意境自然意译，忠于原意且通顺。
 二、JSON 格式强制要求
-统一使用单引号，禁止双引号。
+字段的值里如果存在引号则统一使用单引号。
 严格缩进美化，可直接复制使用。
 字段不可缺失、不可错名：
 fanyi：整行歌词翻译
