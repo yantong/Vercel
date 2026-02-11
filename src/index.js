@@ -27,9 +27,9 @@ const client = new OpenAI({
 });
 
 const initialModelReqCountMap = {
-  // "deepseek-ai/DeepSeek-V3.2": 100,
-  "deepseek-ai/DeepSeek-R1-0528": 100,
-  "moonshotai/Kimi-K2.5": 50,
+  "deepseek-ai/DeepSeek-V3.2": 100,
+  // "deepseek-ai/DeepSeek-R1-0528": 100,
+  // "moonshotai/Kimi-K2.5": 50,
 };
 
 let modelReqCountMap = { ...initialModelReqCountMap };
@@ -112,6 +112,7 @@ hanyi：单词中文含义
 yuanxing：单词原型（与原形相同时省略此字段）
 kuozhan：扩展用法 + 歌词语境说明
 输出只返回 JSON，无解释、无注释、无代码块包裹,不需要以${"```json"}开头和${"```"}结尾。
+需要严格检查JSON的格式是否正确。
 
 json示例如下：
 [
