@@ -388,7 +388,7 @@ app.post("/analysis", async (req, res) => {
   await callAnalysis(res, lyrics);
 });
 
-app.get("/", (req, res) => res.send("hello word"));
+app.get("/hello", (req, res) => res.send("hello word"));
 
 app.listen(3000, () => console.log("Server ready on port 3000."));
 
