@@ -27,11 +27,11 @@ const client = new OpenAI({
 });
 
 const initialModelReqCountMap = {
-  "Qwen/Qwen3-235B-A22B-Instruct-2507": 100,
-  "Qwen/Qwen3-Coder-480B-A35B-Instruct": 50,
-  "meituan-longcat/LongCat-Flash-Lite": "50",
-  "deepseek-ai/DeepSeek-V3.2": 100,
   "moonshotai/Kimi-K2.5": 50,
+  "deepseek-ai/DeepSeek-V3.2": 100,
+  "meituan-longcat/LongCat-Flash-Lite": 50,
+  "Qwen/Qwen3-Coder-480B-A35B-Instruct": 50,
+  "Qwen/Qwen3-235B-A22B-Instruct-2507": 100,
 };
 
 let modelReqCountMap = { ...initialModelReqCountMap };
@@ -290,6 +290,10 @@ ${lyrics}
     res.end();
   } catch (error) {
     console.error("调用模型出错：", error.message);
+    if (model) {
+      modelReqCountMap[model] = 0;
+      console.log(`模型 ${model} 调用失败，已将剩余次数设置为0`);
+    }
     if (!res.headersSent) {
       res.status(500).send("调用模型出错");
     }
@@ -346,6 +350,10 @@ ${lyrics}
     }
   } catch (error) {
     console.error("调用模型出错：", error.message);
+    if (model) {
+      modelReqCountMap[model] = 0;
+      console.log(`模型 ${model} 调用失败，已将剩余次数设置为0`);
+    }
     if (!res.headersSent) {
       res.status(500).send("调用模型出错");
     }
