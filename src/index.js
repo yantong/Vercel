@@ -6,7 +6,11 @@ const app = express();
 app.use(express.json());
 
 // 静态文件服务
-app.use(express.static(path.join(__dirname, "../dist")));
+const currentFilePath = __filename;
+const currentDirPath = path.dirname(currentFilePath);
+const parentDirPath = path.resolve(currentDirPath, "..");
+
+app.use(express.static(parentDirPath + "/dist"));
 
 // 添加 CORS 支持
 app.use((req, res, next) => {
