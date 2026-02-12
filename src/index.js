@@ -1,8 +1,12 @@
 const express = require("express");
 const OpenAI = require("openai");
+const path = require("path");
 
 const app = express();
 app.use(express.json());
+
+// 静态文件服务
+app.use(express.static(path.join(__dirname, "../dist")));
 
 // 添加 CORS 支持
 app.use((req, res, next) => {
@@ -378,6 +382,10 @@ app.post("/analysis", async (req, res) => {
   }
 
   await callAnalysis(res, lyrics);
+});
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../dist/index.html"));
 });
 
 app.listen(3000, () => console.log("Server ready on port 3000."));
