@@ -404,6 +404,9 @@ app.get("/wechat/session", async (req, res) => {
       `https://api.weixin.qq.com/sns/jscode2session?appid=${appid}&secret=${secret}&js_code=${js_code}&grant_type=${grant_type}`
     );
     const data = await response.json();
+    
+    delete data.session_key
+
     res.json(data);
   } catch (error) {
     console.error("调用微信接口出错：", error.message);
