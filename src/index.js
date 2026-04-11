@@ -387,6 +387,32 @@ app.post("/analysis", async (req, res) => {
   await callAnalysis(res, lyrics);
 });
 
+app.get("/wechat/session", async (req, res) => {
+  const { js_code } = req.query;
+
+  if (!js_code) {
+    return res.status(400).send("缺少 js_code 参数");
+  }
+
+  const appid = "wx18cf46b9f6b52a3d"; // Replace with your WeChat mini program appid
+  const secret = "911d2515ad1a4627f3c5ef8895b596c7"; // Replace with your WeChat mini program secret
+  const grant_type = "authorization_code";
+
+  try {
+    const response = await fetch(
+      `https://api.weixin.qq.com/sns/jscode2session?appid=${appid}&secret=${secret}&js_code=${js_code}&grant_type=${grant_type}`
+    );
+    const data = await response.json();
+    
+    delete data.session_key
+
+    res.json(data);
+  } catch (error) {
+    console.error("调用微信接口出错：", error.message);
+    res.status(500).send("调用微信接口出错");
+  }
+});
+
 app.listen(3000, () => console.log("Server ready on port 3000."));
 
 exports.app = app;
