@@ -35,11 +35,10 @@ const client = new OpenAI({
 });
 
 const initialModelReqCountMap = {
-  "moonshotai/Kimi-K2.5": 50,
-  "deepseek-ai/DeepSeek-V3.2": 100,
-  "meituan-longcat/LongCat-Flash-Lite": 50,
   "Qwen/Qwen3-Coder-480B-A35B-Instruct": 50,
   "Qwen/Qwen3-235B-A22B-Instruct-2507": 100,
+  "moonshotai/Kimi-K2.5": 50,
+  "deepseek-ai/DeepSeek-V3.2": 100,
 };
 
 let modelReqCountMap = { ...initialModelReqCountMap };
